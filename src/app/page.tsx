@@ -134,6 +134,7 @@ export default function Home() {
   const [activeCapability, setActiveCapability] = useState(0);
   const [activeCyclePhase, setActiveCyclePhase] = useState(0);
   const [isAutoCycleActive, setIsAutoCycleActive] = useState(true);
+  const [formError, setFormError] = useState<string | null>(null);
 
   // Form setup
   const {
@@ -149,8 +150,8 @@ export default function Home() {
   });
 
   const onSubmit = async (data: ContactFormValues) => {
+    setFormError(null);
     try {
-      // Use configured endpoint (e.g. Formspree / custom API) or Web3Forms fallback
       const endpoint = process.env.NEXT_PUBLIC_FORM_ENDPOINT || "https://api.web3forms.com/submit";
       
       const payload: Record<string, any> = {
@@ -169,19 +170,17 @@ export default function Home() {
         body: JSON.stringify(payload),
       });
 
-      if (response.ok) {
+      const resData = await response.json();
+
+      if (response.ok && resData.success) {
         setIsFormSubmitted(true);
         reset();
       } else {
-        // Fallback for safety in development if API key isn't configured yet
-        setIsFormSubmitted(true);
-        reset();
+        setFormError(resData.message || "Failed to submit request to email service.");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Form submission error:", error);
-      // Fallback so users aren't locked out in dev environment
-      setIsFormSubmitted(true);
-      reset();
+      setFormError(error.message || "An unexpected error occurred during submission.");
     }
   };
 
@@ -1497,6 +1496,12 @@ export default function Home() {
                       />
                       {errors.message && <p className="text-[10px] text-emergency font-semibold">{errors.message.message}</p>}
                     </div>
+
+                    {formError && (
+                      <p className="text-[11px] text-emergency font-semibold bg-red-50 border border-red-200 p-3 rounded-xl text-center">
+                        {formError}
+                      </p>
+                    )}
 
                     <button
                       type="submit"
