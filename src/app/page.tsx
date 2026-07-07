@@ -156,7 +156,7 @@ export default function Home() {
       const payload: Record<string, any> = {
         ...data,
         // Web3Forms access key from env or placeholder
-        access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "YOUR_ACCESS_KEY_HERE",
+        access_key: process.env.NEXT_PUBLIC_WEB3FORMS_KEY || "4e3cdef7-96fc-468c-a3c9-32208396fa6a",
         subject: `New SafeWalk Beta Request from ${data.name}`
       };
 
